@@ -1,12 +1,12 @@
 # Infraestrutura de TIC do IFSC câmpus São José
 
 A CTIC atualmente administra em sua infraestrutura:
-* 14 Servidores físicos ([Veja](https://netbox.sj.ifsc.edu.br/dcim/devices/?q=&role=acesso&mac_address=&has_primary_ip=&virtual_chassis_member=&console_ports=&console_server_ports=&power_ports=&power_outlets=&interfaces=&pass_through_ports=&per_page=250))
-* 3 Laminas (Blades) HP BL465c-S em um Enclosure HP C7000 ([Veja](https://netbox.sj.ifsc.edu.br/dcim/racks/19/)) 
-* Storage EMC VNX 5300 com 7 Barramentos e 125 discos ([Veja](https://netbox.sj.ifsc.edu.br/dcim/racks/24/)) 
-* 48 Switches gerenciáveis (+ alguns não gerenciáveis) ([Veja](https://netbox.sj.ifsc.edu.br/dcim/devices/?q=switch&role=acesso&mac_address=&has_primary_ip=&virtual_chassis_member=&console_ports=&console_server_ports=&power_ports=&power_outlets=&interfaces=&pass_through_ports=))
+* 14 Servidores físicos
+* 3 Laminas (Blades) HP BL465c-S em um Enclosure HP C7000
+* Storage EMC VNX 5300 com 7 Barramentos e 125 discos
+* 48 Switches gerenciáveis (+ alguns não gerenciáveis)
 * Firewall PFSense com redundância ativa de _hardware_ via [CARP](https://docs.netgate.com/pfsense/en/latest/highavailability/index.html)
-* 26 APs Cisco séries 1600 e 2600
+* 27 APs Cisco séries 1600 e 2600
 * 380 Computadores (Gerenciados em [IaC](https://pt.wikipedia.org/wiki/Infraestrutura_como_C%C3%B3digo) [com Ansible](https://github.com/ctic-sje-ifsc/ansible))
 * Central telefônica com aproximadamente 70 ramais
 * +30 Servidores Virtuais ([página Web](http://sj.ifsc.edu.br), [wiki](http://wiki.sj.ifsc.edu.br), câmeras e outros)
@@ -29,7 +29,7 @@ A rede está configurada na forma de anel no seu core, com redûndancia de camin
 A solução de firewall que utilizamos é o Possuímos [redundância ativa](https://doc.pfsense.org/index.php/High_Availability) no nosso _firewall_ via servidores físicos distintos. 
 
 Essa demanda foi baseada no seguinte questionamento: "E se/quando nosso firewall Cisco ASA queimar/dar problema?". 
-Dentro do IFSC alguns câmpus já utilizavam o PFSense como firewall e com excelentes resultados. Com isso, primeiramente substituímos o firewall atual para o PFSense para poder implantar alta disponibilidade. Os _Hardwares_ utilizados(doação: obsoleto da reitoria) são o seguinte:
+Dentro do IFSC alguns câmpus já utilizavam o PFSense como firewall e com excelentes resultados. Com isso, primeiramente substituímos o firewall atual para o PFSense para poder implantar alta disponibilidade. Segue a descrição de _Hardware_ dos dois servidores (ambos foram doados pela reitoria por serem obsoletos):
 
 * Master - IBM System x3200 M2:
   * Processador: Intel(R) Xeon(R) CPU X3320 @ 2.50GHz (4 CPUs: 1 package(s) x 4 core(s))
@@ -65,13 +65,13 @@ Cada máquina física possui discos que fazem parte do cluster de armazenamento 
 ## Cluster de armazenamento - Ceph
 
 Utilizamos a implementação de [Ceph integrada do Proxmox](https://pve.proxmox.com/pve-docs/chapter-pveceph.html).
-O [CRUSH map](https://docs.ceph.com/docs/jewel/rados/operations/crush-map/) foi configurado de modo a implementar um domínios de falha com o agrupamento de servidores do tipo Blade, que fazem parte do mesmo Chassis. Assim, é garantido que as réplicas de dados não fiquem todos no mesmo domínio de falha. Com isso, garantimos que caso ocorra algum problema na Blade (os nos seus discos vindo do Storage) não haverá perda de dados nem indisponibilidade dos serviços.
+O [CRUSH map](https://docs.ceph.com/docs/jewel/rados/operations/crush-map/) foi configurado de modo a implementar um domínio de falha com o agrupamento de servidores do tipo Blade, que fazem parte do mesmo Chassis. Assim, é garantido que as réplicas de dados não fiquem todos no mesmo domínio de falha. Com isso, garantimos que caso ocorra algum problema na Blade (os nos seus discos vindo do Storage) não haverá perda de dados e indisponibilidade dos serviços.
 ![CRUSH Map e Domínio de Falhas](docs/crush_map.png)
 
 
 ## Cluster de Virtualização - Proxmox
 
-O cluster de virtualização criado a partir de hosts com o Proxmox instalado seguindo a [documentação de cluster do Proxmox](https://pve.proxmox.com/pve-docs/chapter-pvecm.html).
+O cluster de virtualização foi criado a partir de hosts com o Proxmox instalado seguindo a [documentação de cluster do Proxmox](https://pve.proxmox.com/pve-docs/chapter-pvecm.html).
 
 ![Proxmox](docs/cluster_proxmox.png)
 
