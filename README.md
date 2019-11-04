@@ -100,7 +100,7 @@ Um conjunto de máquinas virtuais compoẽm um "Cluster de Contâiner", para iss
 
 ![Rancher](docs/rancher.png)
 
-As VMs que fazem parte do clurter são criadas a partir de um [template de VM](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=2ahUKEwj27ezut8nlAhWWHbkGHd0OBNEQFjAAegQIABAB&url=https%3A%2F%2Fpve.proxmox.com%2Fwiki%2FVM_Templates_and_Clones&usg=AOvVaw29AbWveRuO4yMLWinJ9VfM) configurada com [cloud init](https://pve.proxmox.com/wiki/Cloud-Init_Support). Os [requisitos de configuração e dependências](https://rancher.com/docs/rke/latest/en/os/) são aplicados nas VMs a partir da ferramenta Ansible a partir [desse repositório](https://github.com/ctic-sje-ifsc/ansible/blob/master/servidores/vms_nuvem.yml). 
+As VMs que fazem parte do clurter são criadas a partir de um [template de VM](https://pve.proxmox.com/wiki/VM_Templates_and_Clones) configurada com [cloud init](https://pve.proxmox.com/wiki/Cloud-Init_Support). Os [requisitos de configuração e dependências](https://rancher.com/docs/rke/latest/en/os/) são aplicados nas VMs a partir da ferramenta Ansible a partir [desse repositório](https://github.com/ctic-sje-ifsc/ansible/blob/master/servidores/vms_nuvem.yml). 
 
 Com os requisitos e configurações aplicados é utilizado a ferramenta [rke](https://rancher.com/docs/rke/latest/en/) para fazer a criação e gestão do cluster kubernetes, como descrito no repositório [XXX](github.com/ctic-sje-ifsc/XXD)
 
