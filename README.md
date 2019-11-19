@@ -2,12 +2,12 @@
 
 A CTIC atualmente administra em sua infraestrutura:
 * 14 Servidores físicos
-* 3 Laminas (Blades) HP BL465c-S em um Enclosure HP C7000
-* Storage EMC VNX 5300 com 7 Barramentos e 125 discos
-* 48 Switches gerenciáveis (+ alguns não gerenciáveis)
-* Firewall PFSense com redundância ativa de _hardware_ via [CARP](https://docs.netgate.com/pfsense/en/latest/highavailability/index.html)
-* 27 APs Cisco séries 1600 e 2600
-* 380 Computadores (Gerenciados em [IaC](https://pt.wikipedia.org/wiki/Infraestrutura_como_C%C3%B3digo) [com Ansible](https://github.com/ctic-sje-ifsc/ansible))
+* 3 Lâminas (_Blades_) HP BL465c-S em um _enclosure_ HP C7000
+* _Storage_ EMC VNX 5300 com 7 barramentos e 125 discos
+* 48 _Switches_ gerenciáveis (e outros não gerenciáveis)
+* _Firewall_ PFSense com redundância ativa de _hardware_ via [CARP](https://docs.netgate.com/pfsense/en/latest/highavailability/index.html)
+* 27 _APs_ Cisco séries 1600 e 2600
+* 380 Computadores (gerenciados em [IaC](https://pt.wikipedia.org/wiki/Infraestrutura_como_C%C3%B3digo) [com Ansible](https://github.com/ctic-sje-ifsc/ansible))
 * Central telefônica com aproximadamente 70 ramais
 * +30 Servidores Virtuais ([página Web](http://sj.ifsc.edu.br), [wiki](http://wiki.sj.ifsc.edu.br), câmeras e outros)
 
@@ -15,21 +15,21 @@ A CTIC atualmente administra em sua infraestrutura:
 
 ## Segurança e estabilidade da nossa rede hoje:
 
-Possuimos redundância ativa no nosso firewall. Abordaremos a alta disponibilidade do firewall no próximo tópico com mais detalhe. Além disso, possuímos redundância passiva no nosso switch core. A figura a seguir ilustra isto:
+Possuímos redundância ativa no nosso _firewall_. Abordamos a alta disponibilidade do _firewall_ no próximo tópico com mais detalhe. Além disso, possuímos redundância passiva no nosso _core switch_. A figura a seguir ilustra isto:
 
 ![Redundancias](docs/infra_redundancias.png)
 
-A rede está configurada na forma de anel no seu core, com redûndancia de caminho e de links (LACP). Os racks de borda estão conectados com redundância de link aos racks centrais. A rede é segmentada em [VLANs](https://netbox.sj.ifsc.edu.br/ipam/vlans/) e pussuímos política de acessos entre as VLAN (ACL). Incluindo nessas políticas possuimos bloqueios de propagação de DHCP indevido. Além disso, possuimos STP configurado em toda a rede.
+A rede está configurada na forma de anel no seu _core_, com redûndancia de caminho e de links (LACP). Os _racks_ de borda estão conectados com redundância de link aos _racks_ centrais. A rede é segmentada em [VLANs](https://netbox.sj.ifsc.edu.br/ipam/vlans/) e pussuímos política de acessos entre as VLANs (ACLs). Incluido nessas políticas possuímos bloqueios de propagação de DHCP indevido. Além disso, possuímos STP configurado em toda a rede.
 
 ![Rede em anel](docs/redundancia_geografica_rede_interna.png)
 
 
-### Firewall PFSense com Alta disponibilidade
+### _Firewall_ PFSense com Alta disponibilidade
 
-A solução de firewall que utilizamos é o Possuímos [redundância ativa](https://doc.pfsense.org/index.php/High_Availability) no nosso _firewall_ via servidores físicos distintos. 
+A solução de _firewall_ que utilizamos é o [redundância ativa](https://doc.pfsense.org/index.php/High_Availability) no nosso _firewall_ via servidores físicos distintos. 
 
-Essa demanda foi baseada no seguinte questionamento: "E se/quando nosso firewall Cisco ASA queimar/dar problema?". 
-Dentro do IFSC alguns câmpus já utilizavam o PFSense como firewall e com excelentes resultados. Com isso, primeiramente substituímos o firewall atual para o PFSense para poder implantar alta disponibilidade. Segue a descrição de _Hardware_ dos dois servidores (ambos foram doados pela reitoria por serem obsoletos):
+Essa demanda foi baseada no seguinte questionamento: "_E se/quando nosso firewall Cisco ASA queimar/dar problema?_". 
+Dentro do IFSC alguns câmpus já utilizavam o PFSense como _firewall_ e com excelentes resultados. Com isso, primeiramente substituímos o firewall atual para o PFSense para poder implantar alta disponibilidade. Segue a descrição de _hardware_ dos dois servidores (ambos foram doados pela reitoria por estarem obsoletos):
 
 * Master - IBM System x3200 M2:
   * Processador: Intel(R) Xeon(R) CPU X3320 @ 2.50GHz (4 CPUs: 1 package(s) x 4 core(s))
@@ -42,7 +42,7 @@ Dentro do IFSC alguns câmpus já utilizavam o PFSense como firewall e com excel
   * Processador: Intel(R) Pentium(R) D CPU 3.00GHz (2 CPUs: 1 package(s) x 2 core(s))
   * Memória 2 GB
 
-Fizemos o [registro em vídeo](https://youtu.be/jkS7ZbTbtkA) da PoC de um possível problema com o Firewall Master:
+Fizemos o [registro em vídeo](https://youtu.be/jkS7ZbTbtkA) da PoC de um possível problema com o _master firewall_:
 
 -[![Registro em Vídeo do teste](https://img.youtube.com/vi/jkS7ZbTbtkA/0.jpg)](https://youtu.be/jkS7ZbTbtkA)
 
@@ -55,7 +55,7 @@ Fizemos o [registro em vídeo](https://youtu.be/jkS7ZbTbtkA) da PoC de um possí
 
 ### Hiperconvergência = Proxmox + Ceph (+ k8s):
 
-Possuimos uma infraestrutura Hiperconvergência (HCI), utilizando soluções definidas por software (Software Defined -SD), onde armazenamento, processamento e rede compartilham o mesmo hardware de arquitetura x86 padrão da indústria. Com isso alcançamos uma melhor eficiência e agilidade na gestão dos recursos de TIC.
+Possuímos uma infraestrutura hiperconvergente (HCI), utilizando soluções definidas por _software_ (_Software Defined_ -SD), onde armazenamento, processamento e rede compartilham o mesmo hardware de arquitetura x86 padrão da indústria. Com isso alcançamos uma melhor eficiência e agilidade na gestão dos recursos de TIC.
 A figura abaixo apresenta uma visão global da nossa infraestrutura :
 
 ![Desenho da Infra de Serviços](docs/nova_infra.png)
