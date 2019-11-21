@@ -51,62 +51,62 @@ Fizemos o [registro em vídeo](https://youtu.be/jkS7ZbTbtkA) da PoC de um possí
 ![PFsense HA](docs/pfsense_carp_master_backup.png)
 
 
-## Infraestrutura de Data Center:
+## Infraestrutura de _Data Center_:
 
 ### Hiperconvergência = Proxmox + Ceph (+ k8s):
 
-Possuímos uma infraestrutura hiperconvergente (HCI), utilizando soluções definidas por _software_ (_Software Defined_ -SD), onde armazenamento, processamento e rede compartilham o mesmo hardware de arquitetura x86 padrão da indústria. Com isso alcançamos uma melhor eficiência e agilidade na gestão dos recursos de TIC.
+Possuímos uma infraestrutura hiperconvergente (HCI), utilizando soluções definidas por _software_ (_Software Defined_ - SD), onde armazenamento, processamento e rede compartilham o mesmo _hardware_ de arquitetura amd64 padrão da indústria. Com isso alcançamos uma melhor eficiência e agilidade na gestão dos recursos de TIC.
 A figura abaixo apresenta uma visão global da nossa infraestrutura :
 
 ![Desenho da Infra de Serviços](docs/nova_infra.png)
 
-Cada máquina física possui discos que fazem parte do cluster de armazenamento distribuído realizado pela ferramenta [Ceph](https://docs.ceph.com/docs/master/start/intro/). As mesmas máquinas físicas fazem parte de um cluster de Virtualização por meio da ferramenta [Proxmox](https://www.proxmox.com/en/proxmox-ve), possibilitando alta disponibilidade de máquinas virtuais, migração a quente e entre outros. Os discos utilizados pelas VMs são providos pelo cluster de armazenamento, mais especificamente um [dispositivo de bloco do Ceph](https://docs.ceph.com/docs/master/rbd/). Fazemos backup completos semanais das VMs no nosso Storage, diretamente pelo serviço provido pelo Proxmox.
+Cada máquina física possui discos que fazem parte do _cluster_ de armazenamento distribuído realizado pela ferramenta [Ceph](https://docs.ceph.com/docs/master/start/intro/). As mesmas máquinas físicas fazem parte de um _cluster_ de virtualização por meio da ferramenta [Proxmox](https://www.proxmox.com/en/proxmox-ve), possibilitando alta disponibilidade de máquinas virtuais, migração a quente, entre outros. Os discos utilizados pelas VMs são providos pelo _cluster_ de armazenamento, mais especificamente um [dispositivo de bloco do Ceph](https://docs.ceph.com/docs/master/rbd/). Fazemos backup completos semanais das VMs no nosso _storage_ diretamente pelo serviço provido pelo Proxmox.
 
-## Cluster de armazenamento - Ceph
+## _Cluster_ de armazenamento - Ceph
 
 Utilizamos a implementação de [Ceph integrada do Proxmox](https://pve.proxmox.com/pve-docs/chapter-pveceph.html).
-O [CRUSH map](https://docs.ceph.com/docs/jewel/rados/operations/crush-map/) foi configurado de modo a implementar um domínio de falha com o agrupamento de servidores do tipo Blade, que fazem parte do mesmo Chassis. Assim, é garantido que as réplicas de dados não fiquem todos no mesmo domínio de falha. Com isso, garantimos que caso ocorra algum problema na Blade (os nos seus discos vindo do Storage) não haverá perda de dados e indisponibilidade dos serviços.
+O [CRUSH map](https://docs.ceph.com/docs/jewel/rados/operations/crush-map/) foi configurado de modo a implementar um domínio de falha com o agrupamento de servidores do tipo _blade_ que fazem parte do mesmo chassi. Assim, é garantido que as réplicas de dados não fiquem todas no mesmo domínio de falha, e caso ocorra problema em alguma _blade_ (os nos seus discos mapeados do _storage_) não haverá perda de dados e indisponibilidade dos serviços.
 ![CRUSH Map e Domínio de Falhas](docs/crush_map.png)
 
 
-## Cluster de Virtualização - Proxmox
+## _Cluster_ de Virtualização - Proxmox
 
-O cluster de virtualização foi criado a partir de hosts com o Proxmox instalado seguindo a [documentação de cluster do Proxmox](https://pve.proxmox.com/pve-docs/chapter-pvecm.html).
+O cluster de virtualização foi criado a partir de máquinas com o Proxmox, sendo esse instalado seguindo a [documentação de cluster do Proxmox](https://pve.proxmox.com/pve-docs/chapter-pvecm.html).
 
 ![Proxmox](docs/cluster_proxmox.png)
 
-A figura a seguir representa um exemplo da configuração de rede de um host para fazer parte do cluster. É possível verificar em especial: a agregação de link (bond0), a rede do Cluster, SAN e Ceph.
+A figura a seguir representa um exemplo da configuração de rede de uma máquina para fazer parte do _cluster_. É possível verificar em especial: a agregação de enlace (bond0), a rede do _cluster_, SAN e Ceph.
 
 ![Example Network Proxmox Node](docs/network_proxmox_node.png)
 
-Os recursos (CPU, Memória e Armazenamento) são agrupados no cluster de virtualização, conforme ilustrado a seguir:
+Os recursos (CPU, Memória e Armazenamento) são agrupados no _cluster_ de virtualização conforme ilustrado a seguir:
 
 ![Sumário](docs/sumary_cluster_pve.png)
 
-O armazenamento utilizado pelo cluster de virtualização (discos de VM, snapshots, ISOs...) é fornecido pelo [Cluster de armazenamento Ceph](#cluster-de-armazenamento-ceph). A figura a seguir ilustra os "Storages": cephfs ([CephFS](https://docs.ceph.com/docs/master/cephfs/)) e Storage_Ceph ([RBD](https://docs.ceph.com/docs/master/rbd/)) disponíveis para uso: 
+O armazenamento utilizado pelo _cluster_ de virtualização (discos de VM, _snapshots_, ISOs etc.) é fornecido pelo [Cluster de armazenamento Ceph](#cluster-de-armazenamento-ceph). A figura a seguir ilustra os "_storages_": `cephfs` ([CephFS](https://docs.ceph.com/docs/master/cephfs/)) e Storage_Ceph ([RBD](https://docs.ceph.com/docs/master/rbd/)) disponíveis para uso: 
 
 ![Storage](docs/storage_proxmox_cluster.png)
 
-O "Storage" Backup_NFS é um armazenamento do tipo NFS, provido por um dos hosts conectado ao nosso Storage (físico), onde fazemos os backups full das VMs semanalmente.
+O "_storage_" `Backup_NFS` é um armazenamento do tipo NFS, provido por uma das máquinas conectado ao nosso _storage_ (físico), onde fazemos os _full backups_ das VMs semanalmente.
 
 O [cluster possui a configuração](https://pve.proxmox.com/pve-docs/chapter-ha-manager.html) para fornecer **alta disponibilidade**  nas VMs:
 
 ![HA](docs/ha_cluster.png)'
 
 
-## "Cluster de Contâiner" / Nuvem privada - Kubernetes + Rancher
+## "_Cluster_ de Contêiner" / Nuvem privada - Kubernetes + Rancher
 
-Um conjunto de máquinas virtuais compoẽm um "Cluster de Contâiner", para isso utilizamos o [Kubernetes](https://kubernetes.io/pt/) como orquestrador de contâineres. O gerenciamento do cluster Kubernetes, em especial a parte de autenticação e autorização, é realizado pelo [Rancher](https://rancher.com/products/rancher). A seguir uma tela da interface do Rancher.
+Um conjunto de máquinas virtuais compõem um "_cluster_ de Contêiner", para isso utilizamos o [Kubernetes](https://kubernetes.io/pt/) como orquestrador. O gerenciamento do _cluster_ Kubernetes, em especial a parte de autenticação e autorização, é realizado pelo [Rancher](https://rancher.com/products/rancher). A seguir uma tela da interface do Rancher.
 
 ![Rancher](docs/rancher.png)
 
-As VMs que fazem parte do clurter são criadas a partir de um [template de VM](https://pve.proxmox.com/wiki/VM_Templates_and_Clones) configurada com [cloud init](https://pve.proxmox.com/wiki/Cloud-Init_Support). Os [requisitos de configuração e dependências](https://rancher.com/docs/rke/latest/en/os/) são aplicados nas VMs a partir da ferramenta Ansible a partir [desse repositório](https://github.com/ctic-sje-ifsc/ansible/blob/master/servidores/vms_nuvem.yml). 
+As VMs que fazem parte do _cluster_ são criadas a partir de um [modelo de VM](https://pve.proxmox.com/wiki/VM_Templates_and_Clones) configurado com [cloud init](https://pve.proxmox.com/wiki/Cloud-Init_Support). Os [requisitos de configuração e dependências](https://rancher.com/docs/rke/latest/en/os/) são aplicados nas VMs a partir da ferramenta Ansible a partir do repositório [ansible](https://github.com/ctic-sje-ifsc/ansible/blob/master/servidores/vms_nuvem.yml). 
 
-Com os requisitos e configurações aplicados é utilizado a ferramenta [rke](https://rancher.com/docs/rke/latest/en/) para fazer a criação e gestão do cluster kubernetes, como descrito no repositório [XXX](github.com/ctic-sje-ifsc/XXD)
+Com os requisitos e configurações aplicados é utilizado a ferramenta [rke](https://rancher.com/docs/rke/latest/en/) para fazer a criação e gestão do _cluster_ Kubernetes, como descrito no repositório [cluster_k8s_rke](https://github.com/ctic-sje-ifsc/cluster_k8s_rke).
 
 ## Armazenamento persistente para os serviços na nuvem k8s
 
-Utilizamos atualmente 4 tipos de [armazenamento persistente](https://kubernetes.io/docs/concepts/storage/persistent-volumes/): cephfs, rbd, ISCSI e NFS. Abaixo podemos ver exemplos de utilização de cada um nos nossos serviços.
+Utilizamos atualmente 4 tipos de [armazenamento persistente](https://kubernetes.io/docs/concepts/storage/persistent-volumes/): `cephfs`, `rbd`, ISCSI e NFS. Abaixo podemos ver exemplos de utilização de cada um nos nossos serviços.
 
 ```yaml
 apiVersion: v1
